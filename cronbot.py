@@ -46,7 +46,7 @@ def add_users_links(message):
 
             bot.reply_to(message, response)
         
-        elif ":" in link:
+        elif any (x for x in link if x in ["1","2","3","4","5","6","7","8","9","0"]):
 
             response = "local server URL not accepted"
 
