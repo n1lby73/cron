@@ -44,6 +44,9 @@ def send_welcome(message):
 # Handle /add
 @bot.message_handler(commands=['add'])
 def add_users_links(message):
+
+    chat_id = message.chat.id
+
     try:
 
         link = message.text.split(maxsplit=1)[1]
@@ -68,9 +71,20 @@ def add_users_links(message):
 
         else:
 
+            usersLink = chat_data[str(chat_id)]
+                    
+            for users_link in usersLink:
+
+                if users_link == link:
+
+                    response = f"{link} already added"
+                    bot.reply_to(message, response)
+                    
+                    return #To stop the program execution
+
             try:
 
-                response = "kindly hold on while we confirm link authenticity"
+                response = "Kindly hold on while we confirm link authenticity"
 
                 bot.reply_to(message, response)
 
