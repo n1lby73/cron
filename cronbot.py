@@ -1,4 +1,5 @@
 from dotenv import load_dotenv
+import threading
 import requests
 import telebot
 import json
@@ -8,6 +9,7 @@ load_dotenv()
 
 apiToken = os.getenv('n1lby73TestBot')
 bot = telebot.TeleBot(apiToken)
+requestTimeout = 5
 
 # Load existing JSON data (if any)
 try:
@@ -88,7 +90,7 @@ def add_users_links(message):
 
                 bot.reply_to(message, response)
 
-                ping = requests.get(link)
+                ping = requests.get(link, timeout=requestTimeout)
 
                 if ping.status_code == 200:
 
@@ -194,4 +196,27 @@ def send_help(message):
 
     bot.reply_to(message, response)
 
+# Function to extract all links and ping
+    
+def processLinks():
+
+    allLinks = [links for usersLinks in chat_data.values() for links in usersLinks]
+    print (allLinks)
+
+
+# Function to start ping as a thread
+    
+def pingLinks(interval):
+    import time
+    while True:
+        processLinks()
+        time.sleep(interval)
+
+# Start pingLinks in a separate thread
+        
+ping_thread = threading.Thread(target=pingLinks, args=(300,))
+ping_thread.daemon = True  # Set as daemon thread to stop when main thread stops
+ping_thread.start()
+
 bot.infinity_polling()
+# pingLinks(1)
