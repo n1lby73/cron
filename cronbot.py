@@ -126,13 +126,21 @@ def list_users_links(message):
 
     usersLink = chat_data[str(chat_id)]
 
-    response = "Your saved links:\n\n"
+    if len(usersLink) == 0:
 
-    for user_Links in usersLink:
+        response = "You have no saved links"
 
-        response += f"- {user_Links}\n"
+        bot.reply_to(message, response)
 
-    bot.reply_to(message, response)
+    else:
+
+        response = "Your saved links are:\n\n"
+
+        for user_Links in usersLink:
+
+            response += f"- {user_Links}\n"
+
+        bot.reply_to(message, response)
 
 # Handle /delete
 @bot.message_handler(commands=['delete'])
