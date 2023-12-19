@@ -2,3 +2,4 @@ myenv/
 .env
 usersAndLink.json
 todo.txt
+job.py
