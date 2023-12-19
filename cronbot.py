@@ -64,12 +64,32 @@ def add_users_links(message):
 
                 if ping.status_code == 200:
 
-                    print("Message sent successfully!")
                     response = f"Adding {link} to our watchlist"
                     bot.reply_to(message, response)
 
-                    response = f"successfully added {link}"
-                    bot.reply_to(message, response)
+                    chatId = message.chat.id
+
+                    if str(chatId) in chat_data:
+
+                        chat_data[str(chatId)].append(link)
+
+                        # Update the JSON file with the new data
+                        with open('usersAndLink.json', 'w') as file:
+                            json.dump(chat_data, file, indent=4)
+
+                        response = f"successfully added {link}"
+                        bot.reply_to(message, response)
+
+                    else:
+
+                        chat_data[str(chatId)] = []
+                        chat_data[str(chatId)].append(link)
+                        # Update the JSON file with the new data
+                        with open('usersAndLink.json', 'w') as file:
+                            json.dump(chat_data, file, indent=4)
+
+                        response = f"successfully added {link}"
+                        bot.reply_to(message, response)
 
             except:
 
