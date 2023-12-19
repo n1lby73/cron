@@ -134,4 +134,32 @@ def list_users_links(message):
 
     bot.reply_to(message, response)
 
+# Handle /delete
+@bot.message_handler(commands=['delete'])
+def add_users_links(message):
+
+    chat_id = message.chat.id
+    username = message.chat.username
+
+    try:
+
+        deleteChoice = message.text.split(maxsplit=1)[1]
+
+        if str(chat_id) in chat_data:
+
+            print ("here")
+
+        # response = "Your saved links:\n\n"
+
+        # for user_Links in usersLink:
+
+        #     response += f"- {user_Links}\n"
+
+        # bot.reply_to(message, response)
+
+    except:
+
+        response = "No link attached to command"
+        bot.reply_to(message, response)
+
 bot.infinity_polling()
