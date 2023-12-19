@@ -98,7 +98,7 @@ def add_users_links(message):
 
                         chat_data[str(chatId)] = []
                         chat_data[str(chatId)].append(link)
-                        
+
                         # Update the JSON file with the new data
                         with open('usersAndLink.json', 'w') as file:
                             json.dump(chat_data, file, indent=4)
@@ -116,5 +116,22 @@ def add_users_links(message):
 
         response = "No link attach to command"
         bot.reply_to(message, response)
+
+# Handle /list
+@bot.message_handler(commands=['list'])
+def add_users_links(message):
+
+    chat_id = message.chat.id
+    username = message.chat.username
+
+    usersLink = chat_data[str(chat_id)]
+
+    response = "Your saved links:\n\n"
+
+    for user_Links in usersLink:
+
+        response += f"- {user_Links}\n"
+
+    bot.reply_to(message, response)
 
 bot.infinity_polling()
