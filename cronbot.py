@@ -205,13 +205,43 @@ def send_help(message):
 
     bot.reply_to(message, response)
 
+# Function to identify link owner
+    
+def linkOwnerbylink(link):
+
+    for linkOwner, linkOwned in chat_data.items():
+
+        if linkOwned == link:
+
+            return linkOwner
+
+
 # Function to extract all links and ping
     
 def processLinks():
 
     allLinks = [links for usersLinks in chat_data.values() for links in usersLinks]
-    print (allLinks)
 
+    try:
+
+        for links in allLinks:
+
+            response = requests.get(links, timeout=requestTimeout)
+
+            if response.status_code != 200:
+
+                linkOwner = linkOwnerbylink(links)
+
+                botResponse = f"Hello, your link:\n\n{links}\n\ndid not return a 200 response code after pinging"
+                bot.reply_to(linkOwner, botResponse)
+
+    except requests.RequestException:
+            
+            # Handle request exception (e.g., timeout, connection error)
+            linkOwner = linkOwnerbylink(links)
+
+            botResponse = f"Hello, your link:\n\n{links}\n\n could not be reached due to a service timeout or connection error\n\nKindly contact my developer @n1lby73 if error persist"
+            bot.reply_to(linkOwner, botResponse)
 
 # Function to start ping as a thread
     
