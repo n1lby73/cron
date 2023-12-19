@@ -79,7 +79,7 @@ def add_users_links(message):
 
                     response = f"{link} already added"
                     bot.reply_to(message, response)
-                    
+
                     return #To stop the program execution
 
             try:
@@ -167,17 +167,21 @@ def add_users_links(message):
 
         deleteChoice = message.text.split(maxsplit=1)[1]
 
-        if str(chat_id) in chat_data:
+        usersLink = chat_data[str(chat_id)]
+                    
+        for users_link in usersLink:
 
-            print ("here")
+            if users_link == deleteChoice:
 
-        # response = "Your saved links:\n\n"
+                chat_data[str(chat_id)].remove(users_link)
+                
+                with open('usersAndLink.json', 'w') as file:
+                    json.dump(chat_data, file, indent=4)
 
-        # for user_Links in usersLink:
-
-        #     response += f"- {user_Links}\n"
-
-        # bot.reply_to(message, response)
+                response = f"Deleted {deleteChoice}"
+                bot.reply_to(message, response)
+                    
+                return #To stop the program execution
 
     except:
 
