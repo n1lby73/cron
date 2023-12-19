@@ -1,0 +1,85 @@
+from dotenv import load_dotenv
+import requests
+import telebot
+import json
+import os
+
+load_dotenv()
+
+apiToken = os.getenv('n1lby73TestBot')
+bot = telebot.TeleBot(apiToken)
+
+# Load existing JSON data (if any)
+try:
+
+    with open('usersAndLink.json', 'r') as file:
+
+        chat_data = json.load(file)
+
+except FileNotFoundError:
+
+    chat_data = {}
+
+# Handle '/start'
+@bot.message_handler(commands=['start'])
+def send_welcome(message):
+
+    chat_id = message.chat.id
+    username = message.chat.username
+
+    response = f'''Hi there @{username}, 
+                I'm cron bot and I'm here to help you make your free hosting never sleep.
+                use "/add <your project base link>" to add your project to our watchlist'''
+    
+    bot.reply_to(message, response)
+    
+# Handle /add
+@bot.message_handler(commands=['add'])
+def add_users_links(message):
+    try:
+
+        link = message.text.split(maxsplit=1)[1]
+
+        if not link.startswith(("http","https")):
+
+            response = "Please use either https or http format"
+
+            bot.reply_to(message, response)
+        
+        elif ":" in link:
+
+            response = "local server URL not accepted"
+
+            bot.reply_to(message, response)
+
+        else:
+
+            try:
+
+                response = "kindly hold on while we confirm link authenticity"
+
+                bot.reply_to(message, response)
+
+                ping = requests.get(link)
+
+                if ping.status_code == 200:
+
+                    print("Message sent successfully!")
+                    response = f"Adding {link} to our watchlist"
+                    bot.reply_to(message, response)
+
+                    response = f"successfully added {link}"
+                    bot.reply_to(message, response)
+
+            except:
+
+                print(f"Failed to send message")
+                response = f"{link} is not a valid link"
+                bot.reply_to(message, response)
+
+    except IndexError:
+
+        response = "No link attach to command"
+        bot.reply_to(message, response)
+
+bot.infinity_polling()
