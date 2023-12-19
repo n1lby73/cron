@@ -72,6 +72,8 @@ def add_users_links(message):
 
             response = f"{link} has already been added to our watchlist by another user"
 
+            bot.reply_to(message, response)
+
         # elif is_blacklisted(link):
 
         #     response = "the link is blacklisted"
