@@ -20,6 +20,14 @@ except FileNotFoundError:
 
     chat_data = {}
 
+# blacklistedUrl = ["github", "google", "instagram", "facebook", "twitter", "snapchat"]
+
+# def is_blacklisted(link):
+#     for url in blacklistedUrl:
+#         if url in link:
+#             return True
+#     return False
+
 # Handle '/start'
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
@@ -51,6 +59,12 @@ def add_users_links(message):
             response = "local server URL not accepted"
 
             bot.reply_to(message, response)
+
+        # elif is_blacklisted(link):
+
+        #     response = "the link is blacklisted"
+
+        #     bot.reply_to(message, response)
 
         else:
 
@@ -84,6 +98,7 @@ def add_users_links(message):
 
                         chat_data[str(chatId)] = []
                         chat_data[str(chatId)].append(link)
+                        
                         # Update the JSON file with the new data
                         with open('usersAndLink.json', 'w') as file:
                             json.dump(chat_data, file, indent=4)
