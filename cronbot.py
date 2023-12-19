@@ -37,7 +37,7 @@ def send_welcome(message):
 
     response = f'''Hi there @{username}, 
                 I'm cron bot and I'm here to help you make your free hosting never sleep.
-                use "/add <your project base link>" to add your project to our watchlist'''
+                use "/help to see available commands'''
     
     bot.reply_to(message, response)
     
@@ -158,7 +158,7 @@ def list_users_links(message):
 
 # Handle /delete
 @bot.message_handler(commands=['delete'])
-def add_users_links(message):
+def delete_users_links(message):
 
     chat_id = message.chat.id
     username = message.chat.username
@@ -181,11 +181,17 @@ def add_users_links(message):
                 response = f"Deleted {deleteChoice}"
                 bot.reply_to(message, response)
                     
-                return #To stop the program execution
-
     except:
 
         response = "No link attached to command"
         bot.reply_to(message, response)
+
+# Handle /help
+@bot.message_handler(commands=['help'])
+def send_help(message):
+
+    response = "Available commands are: \n\n/help ==> print this help message\n/list ==> list all added links\n/add <url> ==> add link\n/delete <url> ==> delete links"
+
+    bot.reply_to(message, response)
 
 bot.infinity_polling()
