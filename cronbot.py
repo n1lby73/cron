@@ -48,10 +48,13 @@ def send_welcome(message):
 def add_users_links(message):
 
     chat_id = message.chat.id
+    username = message.chat.username
 
     try:
 
         link = message.text.split(maxsplit=1)[1]
+        allLinks = [links for usersLinks in chat_data.values() for links in usersLinks]
+
 
         if not link.startswith(("http","https")):
 
@@ -64,6 +67,10 @@ def add_users_links(message):
             response = "local server URL not accepted"
 
             bot.reply_to(message, response)
+
+        elif link in allLinks:
+
+            response = f"{link} has already been added to our watchlist by another user"
 
         # elif is_blacklisted(link):
 
@@ -79,7 +86,7 @@ def add_users_links(message):
 
                 if users_link == link:
 
-                    response = f"{link} already added"
+                    response = f"Dear @{username}, you've already added {link} to out collection\n\nKindly use '/list' command to see the list of all links you've added"
                     bot.reply_to(message, response)
 
                     return #To stop the program execution
