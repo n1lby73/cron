@@ -119,7 +119,7 @@ def add_users_links(message):
 
 # Handle /list
 @bot.message_handler(commands=['list'])
-def add_users_links(message):
+def list_users_links(message):
 
     chat_id = message.chat.id
     username = message.chat.username
