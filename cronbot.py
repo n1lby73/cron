@@ -206,14 +206,35 @@ def send_help(message):
     bot.reply_to(message, response)
 
 # Function to identify link owner
-    
+
 def linkOwnerbylink(link):
 
     for linkOwner, linkOwned in chat_data.items():
 
-        if linkOwned == link:
+        for confirmLinkedOwned in linkOwned:
 
-            return linkOwner
+            if confirmLinkedOwned == link:
+
+                return linkOwner
+        # break
+# def linkOwnerbylink(link):
+
+#     for linkOwner, linkOwned in chat_data.items():
+#         print ("linkowner by link is here now", linkOwner)
+#         print ("link owned is", linkOwned)
+
+#         for confirmLinkedOwned in linkOwned:
+#             if linkOwned == link:
+#                 print (confirmLinkedOwned, "and", link)
+#                 return linkOwner
+            
+#             print ("hereeeeeeeeeeeeee")
+#         print ("gggggggggggggggggggggggggggggggggggg")
+#         break
+    # print ("rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr")
+        # if linkOwned == link:
+        #     print ("got here")
+        #     return linkOwner
 
 
 # Function to extract all links and ping
@@ -236,10 +257,10 @@ def processLinks():
                 bot.reply_to(linkOwner, botResponse)
 
     except requests.RequestException:
-            
+            print ("yoooo i got here",links)
             # Handle request exception (e.g., timeout, connection error)
             linkOwner = linkOwnerbylink(links)
-
+            print("under EXCEPT ",linkOwner)
             botResponse = f"Hello, your link:\n\n{links}\n\n could not be reached due to a service timeout or connection error\n\nKindly contact my developer @n1lby73 if error persist"
             bot.reply_to(linkOwner, botResponse)
 
