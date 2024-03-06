@@ -70,6 +70,17 @@ def add_users_links(message):
 
         elif link in allLinks:
 
+            usersLink = chat_data[str(chat_id)]
+                    
+            for users_link in usersLink:
+
+                if users_link == link:
+
+                    response = f"Dear @{username}, you've already added {link} to your collection\n\nKindly use '/list' command to see the list of all links you've added"
+                    bot.reply_to(message, response)
+
+                    return #To stop the program execution
+
             response = f"{link} has already been added to our watchlist by another user"
 
             bot.reply_to(message, response)
@@ -82,16 +93,16 @@ def add_users_links(message):
 
         else:
 
-            usersLink = chat_data[str(chat_id)]
+            # usersLink = chat_data[str(chat_id)]
                     
-            for users_link in usersLink:
+            # for users_link in usersLink:
 
-                if users_link == link:
+            #     if users_link == link:
 
-                    response = f"Dear @{username}, you've already added {link} to out collection\n\nKindly use '/list' command to see the list of all links you've added"
-                    bot.reply_to(message, response)
+            #         response = f"Dear @{username}, you've already added {link} to out collection\n\nKindly use '/list' command to see the list of all links you've added"
+            #         bot.reply_to(message, response)
 
-                    return #To stop the program execution
+            #         return #To stop the program execution
 
             try:
 
@@ -216,28 +227,6 @@ def linkOwnerbylink(link):
             if confirmLinkedOwned == link:
 
                 return linkOwner
-        # break
-# def linkOwnerbylink(link):
-
-#     for linkOwner, linkOwned in chat_data.items():
-#         print ("linkowner by link is here now", linkOwner)
-#         print ("link owned is", linkOwned)
-
-#         for confirmLinkedOwned in linkOwned:
-#             if linkOwned == link:
-#                 print (confirmLinkedOwned, "and", link)
-#                 return linkOwner
-            
-#             print ("hereeeeeeeeeeeeee")
-#         print ("gggggggggggggggggggggggggggggggggggg")
-#         break
-    # print ("rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr")
-        # if linkOwned == link:
-        #     print ("got here")
-        #     return linkOwner
-
-
-# Function to extract all links and ping
     
 def processLinks():
 
@@ -254,15 +243,15 @@ def processLinks():
                 linkOwner = linkOwnerbylink(links)
 
                 botResponse = f"Hello, your link:\n\n{links}\n\ndid not return a 200 response code after pinging"
-                bot.reply_to(linkOwner, botResponse)
+                bot.send_message(linkOwner, botResponse)
 
+# Handle request exception (e.g., timeout, connection error)
     except requests.RequestException:
-            print ("yoooo i got here",links)
-            # Handle request exception (e.g., timeout, connection error)
+            
             linkOwner = linkOwnerbylink(links)
-            print("under EXCEPT ",linkOwner)
+
             botResponse = f"Hello, your link:\n\n{links}\n\n could not be reached due to a service timeout or connection error\n\nKindly contact my developer @n1lby73 if error persist"
-            bot.reply_to(linkOwner, botResponse)
+            bot.send_message(linkOwner, botResponse)
 
 # Function to start ping as a thread
     
