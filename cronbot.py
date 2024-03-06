@@ -62,7 +62,7 @@ def add_users_links(message):
 
             bot.reply_to(message, response)
         
-        elif any (x for x in link if x in ["1","2","3","4","5","6","7","8","9","0"]):
+        elif any (x.isdigit() for x in link):
 
             response = "local server URL not accepted"
 
