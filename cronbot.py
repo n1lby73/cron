@@ -68,6 +68,12 @@ def add_users_links(message):
 
             bot.reply_to(message, response)
 
+        elif "www" in link:
+
+            response = "Url provided does not match that of a hosted project"
+
+            bot.reply_to(message, response)
+
         elif link in allLinks:
 
             usersLink = chat_data[str(chat_id)]
@@ -250,7 +256,7 @@ def processLinks():
             
             linkOwner = linkOwnerbylink(links)
 
-            botResponse = f"Hello, your link:\n\n{links}\n\n could not be reached due to a service timeout or connection error\n\nKindly contact my developer @n1lby73 if error persist"
+            botResponse = f"Hello, your link:\n\n{links}\n\ncould not be reached due to a service timeout or connection error.\n\nKindly reach out for support https://github.com/n1lby73/cron/issues if the error persists."
             bot.send_message(linkOwner, botResponse)
 
 # Function to start ping as a thread
