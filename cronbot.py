@@ -99,17 +99,6 @@ def add_users_links(message):
 
         else:
 
-            # usersLink = chat_data[str(chat_id)]
-                    
-            # for users_link in usersLink:
-
-            #     if users_link == link:
-
-            #         response = f"Dear @{username}, you've already added {link} to out collection\n\nKindly use '/list' command to see the list of all links you've added"
-            #         bot.reply_to(message, response)
-
-            #         return #To stop the program execution
-
             try:
 
                 response = "Kindly hold on while we confirm link authenticity"
