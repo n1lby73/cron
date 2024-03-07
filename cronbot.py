@@ -9,7 +9,7 @@ load_dotenv()
 
 apiToken = os.getenv('n1lby73TestBot')
 bot = telebot.TeleBot(apiToken)
-requestTimeout = 5
+requestTimeout = 60
 
 # Load existing JSON data (if any)
 try:
