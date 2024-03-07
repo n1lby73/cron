@@ -22,13 +22,17 @@ except FileNotFoundError:
 
     chat_data = {}
 
-# blacklistedUrl = ["github", "google", "instagram", "facebook", "twitter", "snapchat"]
+whitelistedUrl = [".onrender.com",".pyhtonanywhere.com"]
 
-# def is_blacklisted(link):
-#     for url in blacklistedUrl:
-#         if url in link:
-#             return True
-#     return False
+def is_whitelisted(link):
+
+    for url in whitelistedUrl:
+
+        if url in link:
+
+            return False
+        
+    return True
 
 # Handle '/start'
 @bot.message_handler(commands=['start'])
@@ -91,11 +95,11 @@ def add_users_links(message):
 
             bot.reply_to(message, response)
 
-        # elif is_blacklisted(link):
+        elif is_whitelisted(link):
 
-        #     response = "the link is blacklisted"
+            response = "This is a blacklisted url,\n\nKindly raise an issue https://github.com/n1lby73/cron/issues if you think it's a mistake."
 
-        #     bot.reply_to(message, response)
+            bot.reply_to(message, response)
 
         else:
 
