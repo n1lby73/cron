@@ -22,7 +22,7 @@ except FileNotFoundError:
 
     chat_data = {}
 
-whitelistedUrl = [".onrender.com",".pyhtonanywhere.com"]
+whitelistedUrl = [".onrender.com",".pyhtonanywhere.com", ".netlify.app"]
 
 def is_whitelisted(link):
 
