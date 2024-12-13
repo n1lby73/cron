@@ -33,189 +33,187 @@ def is_whitelisted(link):
             return False
         
     return True
-try:
-    # Handle '/start'
-    @bot.message_handler(commands=['start'])
-    def send_welcome(message):
 
-        chat_id = message.chat.id
-        username = message.chat.username
+# Handle '/start'
+@bot.message_handler(commands=['start'])
+def send_welcome(message):
 
-        response = f'''Hi there @{username}, 
-                    I'm cron bot and I'm here to help you make your free hosting never sleep.
-                    use "/help to see available commands'''
-        
-        bot.reply_to(message, response)
-except Exception as e:
-    print (str(e))
+    chat_id = message.chat.id
+    username = message.chat.username
 
+    response = f'''Hi there @{username}, 
+                I'm cron bot and I'm here to help you make your free hosting never sleep.
+                use "/help to see available commands'''
+    
+    bot.reply_to(message, response)
+    
 # Handle /add
-# @bot.message_handler(commands=['add'])
-# def add_users_links(message):
+@bot.message_handler(commands=['add'])
+def add_users_links(message):
 
-#     chat_id = message.chat.id
-#     username = message.chat.username
+    chat_id = message.chat.id
+    username = message.chat.username
 
-#     try:
+    try:
 
-#         link = message.text.split(maxsplit=1)[1]
-#         allLinks = [links for usersLinks in chat_data.values() for links in usersLinks]
+        link = message.text.split(maxsplit=1)[1]
+        allLinks = [links for usersLinks in chat_data.values() for links in usersLinks]
 
 
-#         if not link.startswith(("http","https")):
+        if not link.startswith(("http","https")):
 
-#             response = "Please use either https or http format"
+            response = "Please use either https or http format"
 
-#             bot.reply_to(message, response)
+            bot.reply_to(message, response)
         
-#         elif any (x.isdigit() for x in link):
+        elif any (x.isdigit() for x in link):
 
-#             response = "local server URL not accepted"
+            response = "local server URL not accepted"
 
-#             bot.reply_to(message, response)
+            bot.reply_to(message, response)
 
-#         elif "www" in link:
+        elif "www" in link:
 
-#             response = "Url provided does not match that of a hosted project"
+            response = "Url provided does not match that of a hosted project"
 
-#             bot.reply_to(message, response)
+            bot.reply_to(message, response)
 
-#         elif link in allLinks:
+        elif link in allLinks:
 
-#             usersLink = chat_data[str(chat_id)]
+            usersLink = chat_data[str(chat_id)]
                     
-#             for users_link in usersLink:
+            for users_link in usersLink:
 
-#                 if users_link == link:
+                if users_link == link:
 
-#                     response = f"Dear @{username}, you've already added {link} to your collection\n\nKindly use '/list' command to see the list of all links you've added"
-#                     bot.reply_to(message, response)
+                    response = f"Dear @{username}, you've already added {link} to your collection\n\nKindly use '/list' command to see the list of all links you've added"
+                    bot.reply_to(message, response)
 
-#                     return #To stop the program execution
+                    return #To stop the program execution
 
-#             response = f"{link} has already been added to our watchlist by another user"
+            response = f"{link} has already been added to our watchlist by another user"
 
-#             bot.reply_to(message, response)
+            bot.reply_to(message, response)
 
-#         elif is_whitelisted(link):
+        elif is_whitelisted(link):
 
-#             response = "This is a blacklisted url,\n\nKindly raise an issue https://github.com/n1lby73/cron/issues if you think it's a mistake."
+            response = "This is a blacklisted url,\n\nKindly raise an issue https://github.com/n1lby73/cron/issues if you think it's a mistake."
 
-#             bot.reply_to(message, response)
+            bot.reply_to(message, response)
 
-#         else:
+        else:
 
-#             try:
+            try:
 
-#                 response = "Kindly hold on while we confirm link authenticity"
+                response = "Kindly hold on while we confirm link authenticity"
 
-#                 bot.reply_to(message, response)
+                bot.reply_to(message, response)
 
-#                 ping = requests.get(link, timeout=requestTimeout)
+                ping = requests.get(link, timeout=requestTimeout)
 
-#                 if ping.status_code == 200:
+                if ping.status_code == 200:
 
-#                     response = f"Adding {link} to our watchlist"
-#                     bot.reply_to(message, response)
+                    response = f"Adding {link} to our watchlist"
+                    bot.reply_to(message, response)
 
-#                     chatId = message.chat.id
+                    chatId = message.chat.id
 
-#                     if str(chatId) in chat_data:
+                    if str(chatId) in chat_data:
 
-#                         chat_data[str(chatId)].append(link)
+                        chat_data[str(chatId)].append(link)
 
-#                         # Update the JSON file with the new data
-#                         with open('usersAndLink.json', 'w') as file:
-#                             json.dump(chat_data, file, indent=4)
+                        # Update the JSON file with the new data
+                        with open('usersAndLink.json', 'w') as file:
+                            json.dump(chat_data, file, indent=4)
 
-#                         response = f"successfully added {link}"
-#                         bot.reply_to(message, response)
+                        response = f"successfully added {link}"
+                        bot.reply_to(message, response)
 
-#                     else:
+                    else:
 
-#                         chat_data[str(chatId)] = []
-#                         chat_data[str(chatId)].append(link)
+                        chat_data[str(chatId)] = []
+                        chat_data[str(chatId)].append(link)
 
-#                         # Update the JSON file with the new data
-#                         with open('usersAndLink.json', 'w') as file:
-#                             json.dump(chat_data, file, indent=4)
+                        # Update the JSON file with the new data
+                        with open('usersAndLink.json', 'w') as file:
+                            json.dump(chat_data, file, indent=4)
 
-#                         response = f"successfully added {link}"
-#                         bot.reply_to(message, response)
+                        response = f"successfully added {link}"
+                        bot.reply_to(message, response)
 
-#             except:
+            except:
 
-#                 print(f"Failed to send message")
-#                 response = f"{link} is not a valid link"
-#                 bot.reply_to(message, response)
+                print(f"Failed to send message")
+                response = f"{link} is not a valid link"
+                bot.reply_to(message, response)
 
-#     except IndexError:
+    except IndexError:
 
-#         response = "No link attach to command"
-#         bot.reply_to(message, response)
+        response = "No link attach to command"
+        bot.reply_to(message, response)
 
-# # Handle /list
-# @bot.message_handler(commands=['list'])
-# def list_users_links(message):
+# Handle /list
+@bot.message_handler(commands=['list'])
+def list_users_links(message):
 
-#     chat_id = message.chat.id
-#     username = message.chat.username
+    chat_id = message.chat.id
+    username = message.chat.username
 
-#     usersLink = chat_data[str(chat_id)]
+    usersLink = chat_data[str(chat_id)]
 
-#     if len(usersLink) == 0:
+    if len(usersLink) == 0:
 
-#         response = "You have no saved links"
+        response = "You have no saved links"
 
-#         bot.reply_to(message, response)
+        bot.reply_to(message, response)
 
-#     else:
+    else:
 
-#         response = "Your saved links are:\n\n"
+        response = "Your saved links are:\n\n"
 
-#         for user_Links in usersLink:
+        for user_Links in usersLink:
 
-#             response += f"- {user_Links}\n"
+            response += f"- {user_Links}\n"
 
-#         bot.reply_to(message, response)
+        bot.reply_to(message, response)
 
-# # Handle /delete
-# @bot.message_handler(commands=['delete'])
-# def delete_users_links(message):
+# Handle /delete
+@bot.message_handler(commands=['delete'])
+def delete_users_links(message):
 
-#     chat_id = message.chat.id
-#     username = message.chat.username
+    chat_id = message.chat.id
+    username = message.chat.username
 
-#     try:
+    try:
 
-#         deleteChoice = message.text.split(maxsplit=1)[1]
+        deleteChoice = message.text.split(maxsplit=1)[1]
 
-#         usersLink = chat_data[str(chat_id)]
+        usersLink = chat_data[str(chat_id)]
                     
-#         for users_link in usersLink:
+        for users_link in usersLink:
 
-#             if users_link == deleteChoice:
+            if users_link == deleteChoice:
 
-#                 chat_data[str(chat_id)].remove(users_link)
+                chat_data[str(chat_id)].remove(users_link)
                 
-#                 with open('usersAndLink.json', 'w') as file:
-#                     json.dump(chat_data, file, indent=4)
+                with open('usersAndLink.json', 'w') as file:
+                    json.dump(chat_data, file, indent=4)
 
-#                 response = f"Deleted {deleteChoice}"
-#                 bot.reply_to(message, response)
+                response = f"Deleted {deleteChoice}"
+                bot.reply_to(message, response)
                     
-#     except:
+    except:
 
-#         response = "No link attached to command"
-#         bot.reply_to(message, response)
+        response = "No link attached to command"
+        bot.reply_to(message, response)
 
-# # Handle /help
-# @bot.message_handler(commands=['help'])
-# def send_help(message):
+# Handle /help
+@bot.message_handler(commands=['help'])
+def send_help(message):
 
-#     response = "Available commands are: \n\n/help ==> print this help message\n/list ==> list all added links\n/add <url> ==> add link\n/delete <url> ==> delete links"
+    response = "Available commands are: \n\n/help ==> print this help message\n/list ==> list all added links\n/add <url> ==> add link\n/delete <url> ==> delete links"
 
-#     bot.reply_to(message, response)
+    bot.reply_to(message, response)
 
 # Function to identify link owner
 
