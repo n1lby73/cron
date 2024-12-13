@@ -261,10 +261,12 @@ def pingLinks(interval):
         time.sleep(interval)
 
 # Start pingLinks in a separate thread
-        
-ping_thread = threading.Thread(target=pingLinks, args=(300,))
-ping_thread.daemon = True  # Set as daemon thread to stop when main thread stops
-ping_thread.start()
+try:
+    ping_thread = threading.Thread(target=pingLinks, args=(300,))
+    ping_thread.daemon = True  # Set as daemon thread to stop when main thread stops
+    ping_thread.start()
 
-bot.infinity_polling()
+    bot.infinity_polling()
+except Exception as e:
+    print(str(e))
 # pingLinks(1)
