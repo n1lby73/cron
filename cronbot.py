@@ -33,7 +33,7 @@ def is_whitelisted(link):
         return False
     
     else:
-        
+
         return True
     # for url in whitelistedUrl:
 
@@ -130,6 +130,7 @@ def add_users_links(message):
 
                         # Update the JSON file with the new data
                         with open('usersAndLink.json', 'w') as file:
+
                             json.dump(chat_data, file, indent=4)
 
                         response = f"successfully added {link}"
@@ -142,11 +143,20 @@ def add_users_links(message):
 
                         # Update the JSON file with the new data
                         with open('usersAndLink.json', 'w') as file:
+
                             json.dump(chat_data, file, indent=4)
 
                         response = f"successfully added {link}"
                         bot.reply_to(message, response)
 
+                elif ping.status_code == 404:
+
+                    response = f"{link}, returned a 404 error code, kindly look it up"
+                    bot.reply_to(message, response)
+
+                else:
+
+                    response = f"{link}, returned error code {ping.status_code}"
             except:
 
                 print(f"Failed to send message")
@@ -249,10 +259,22 @@ def handle_commands(message):
     command = message.text.lower()
 
     #get function to be called
-    handler = command_handlers.get(command)
+    handler = command_handlers.get(command.split()[0])
 
     if handler:
         handler(message)
+
+    elif handler == "/add" or handler == "/delete":
+        
+        linkToAddOrDelete = command.split(" ",1)
+
+        if handler == "/add":
+
+            add_users_links(linkToAddOrDelete)
+
+        if handler == "/delete":
+
+            delete_users_links(linkToAddOrDelete)
 
     else:
 
