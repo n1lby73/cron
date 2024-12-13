@@ -256,11 +256,13 @@ def linkOwnerbylink(link):
 
     for linkOwner, linkOwned in chat_data.items():
 
-        for confirmLinkedOwned in linkOwned:
+        return next((linkOwner for confirmLinkedOwned in linkOwned if confirmLinkedOwned == link), None)
 
-            if confirmLinkedOwned == link:
+        # for confirmLinkedOwned in linkOwned:
 
-                return linkOwner
+        #     if confirmLinkedOwned == link:
+
+        #         return linkOwner
     
 def processLinks():
 
