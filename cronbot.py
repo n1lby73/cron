@@ -1,3 +1,4 @@
+from pymongo import MongoClient
 from dotenv import load_dotenv
 import threading
 import requests
@@ -8,8 +9,13 @@ import os
 load_dotenv()
 
 apiToken = os.getenv('n1lby73TestBot')
+db = MongoClient(os.getenv('MONGO_URI'))
 bot = telebot.TeleBot(apiToken)
 requestTimeout = 60
+
+collection = db['usersAndLink']
+
+print(collection)
 
 # Load existing JSON data (if any)
 try:
@@ -64,7 +70,6 @@ def add_users_links(message):
 
         link = message.text.split(maxsplit=1)[1]
         allLinks = [links for usersLinks in chat_data.values() for links in usersLinks]
-
 
         if not link.startswith(("http","https")):
 
@@ -125,6 +130,12 @@ def add_users_links(message):
                     chatId = message.chat.id
 
                     if str(chatId) in chat_data:
+                        
+                        idd = str(chatId)
+                        print(link)
+                        document = {idd: str(link)}
+                        collection.insert_one({idd: str(link)})
+                        db.close()
 
                         chat_data[str(chatId)].append(link)
 
@@ -157,9 +168,9 @@ def add_users_links(message):
                 else:
 
                     response = f"{link}, returned error code {ping.status_code}"
-            except:
+            except Exception as e:
 
-                print(f"Failed to send message")
+                print(f"Failed to send message {str(e)}")
                 response = f"{link} is not a valid link"
                 bot.reply_to(message, response)
 
@@ -280,6 +291,14 @@ def handle_commands(message):
 
         response = "Sorry, I don't understand that command."
         bot.reply_to(message, response)
+
+# Track all messages that does not have the correct message syntax which is /
+@bot.message_handler(func=lambda userMessage: not userMessage.text.startswith('/'))
+def handle_wrong_msgFormat(message):
+
+    response = "Seems you're trying to send a command kindly use the right format or use '/help' to see list of available commands"
+
+    bot.reply_to(message, response)
 
 # Function to identify link owner
 
