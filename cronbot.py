@@ -10,12 +10,12 @@ load_dotenv()
 
 apiToken = os.getenv('n1lby73TestBot')
 db = MongoClient(os.getenv('MONGO_URI'))
+
 bot = telebot.TeleBot(apiToken)
 requestTimeout = 60
 
-collection = db['usersAndLink']
+collection = db.get_database().usersAndLink
 
-print(collection)
 
 # Load existing JSON data (if any)
 try:
@@ -28,7 +28,7 @@ except FileNotFoundError:
 
     chat_data = {}
 
-whitelistedUrl = [".onrender.com",".pyhtonanywhere.com", ".netlify.app"]
+whitelistedUrl = [".onrender.com",".pyhtonanywhere.com", ".netlify.app", "vercel.app"]
 
 def is_whitelisted(link):
 
@@ -131,11 +131,8 @@ def add_users_links(message):
 
                     if str(chatId) in chat_data:
                         
-                        idd = str(chatId)
-                        print(link)
-                        document = {idd: str(link)}
-                        collection.insert_one({idd: str(link)})
-                        db.close()
+                        document = {str(chatId): link}
+                        collection.insert_one(document)
 
                         chat_data[str(chatId)].append(link)
 
@@ -168,10 +165,10 @@ def add_users_links(message):
                 else:
 
                     response = f"{link}, returned error code {ping.status_code}"
+
             except Exception as e:
 
-                print(f"Failed to send message {str(e)}")
-                response = f"{link} is not a valid link"
+                response = f"An error occured while addidng {link}, kindly contact support or raise an issue on github"
                 bot.reply_to(message, response)
 
     except IndexError:
