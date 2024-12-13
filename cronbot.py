@@ -64,8 +64,7 @@ def handle_commands(message):
 
     else:
 
-        response = "You have ar goatd"
-        print ("work")
+        response = "Sorry, I don't understand that command."
         bot.reply_to(message, response)
 
 # Handle '/start'
