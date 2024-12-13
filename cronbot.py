@@ -26,46 +26,22 @@ whitelistedUrl = [".onrender.com",".pyhtonanywhere.com", ".netlify.app"]
 
 def is_whitelisted(link):
 
-    for url in whitelistedUrl:
+    blackListed = next((url for url in whitelistedUrl if url in link), None)
 
-        if url in link:
+    if blackListed:
 
-            return False
-        
-    return True
-
-# Track all messages sent to the bot in other to handle commands with upper or mixed case
-@bot.message_handler(func=lambda message: message.text.startswith('/'))
-def handle_commands(message):
-
-    # Force the command to be lowercase
-    command = message.text.lower()
+        return False
     
-    #call different function for different matching commands
-    if command == "/start":
-
-        send_welcome(message)
-    
-    elif command == "/add":
-
-        add_users_links(message)
-
-    elif command == "/list":
-
-        list_users_links(message)
-    
-    elif command == "/delete":
-
-        delete_users_links(message)
-
-    elif command == "/help":
-
-        send_help(message)
-
     else:
+        
+        return True
+    # for url in whitelistedUrl:
 
-        response = "Sorry, I don't understand that command."
-        bot.reply_to(message, response)
+    #     if url in link:
+
+    #         return False
+        
+    # return True
 
 # Handle '/start'
 def send_welcome(message):
@@ -248,6 +224,40 @@ def send_help(message):
     response = "Available commands are: \n\n/help ==> print this help message\n/list ==> list all added links\n/add <url> ==> add link\n/delete <url> ==> delete links"
 
     bot.reply_to(message, response)
+
+
+# Define a dictionary mapping commands to their handler functions
+command_handlers = {
+
+    "/start": send_welcome,
+
+    "/add": add_users_links,
+
+    "/list": list_users_links,
+
+    "/delete": delete_users_links,
+
+    "/help": send_help
+
+}
+
+# Track all messages sent to the bot in other to handle commands with upper or mixed case
+@bot.message_handler(func=lambda userMessage: userMessage.text.startswith('/'))
+def handle_commands(message):
+
+    # Force the command to be lowercase
+    command = message.text.lower()
+
+    #get function to be called
+    handler = command_handlers.get(command)
+
+    if handler:
+        handler(message)
+
+    else:
+
+        response = "Sorry, I don't understand that command."
+        bot.reply_to(message, response)
 
 # Function to identify link owner
 
