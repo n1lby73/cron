@@ -159,23 +159,32 @@ def list_users_links(message):
     chat_id = message.chat.id
     username = message.chat.username
 
-    usersLink = chat_data[str(chat_id)]
+    try:
 
-    if len(usersLink) == 0:
+        usersLink = chat_data[str(chat_id)]
+
+        if len(usersLink) == 0:
+
+            response = "You have no saved links"
+
+            bot.reply_to(message, response)
+
+        else:
+
+            response = "Your saved links are:\n\n"
+
+            for user_Links in usersLink:
+
+                response += f"- {user_Links}\n"
+
+            bot.reply_to(message, response)
+    
+    except KeyError:
 
         response = "You have no saved links"
 
         bot.reply_to(message, response)
-
-    else:
-
-        response = "Your saved links are:\n\n"
-
-        for user_Links in usersLink:
-
-            response += f"- {user_Links}\n"
-
-        bot.reply_to(message, response)
+    
 
 # Handle /delete
 @bot.message_handler(commands=['delete'])
