@@ -14,7 +14,7 @@ db = MongoClient(os.getenv('MONGO_URI'))
 bot = telebot.TeleBot(apiToken)
 requestTimeout = 60
 
-collection = db.get_database().usersAndLink
+usersAndLinkCollection = db.get_database().usersAndLink
 
 
 # Load existing JSON data (if any)
@@ -131,8 +131,13 @@ def add_users_links(message):
 
                     if str(chatId) in chat_data:
                         
-                        document = {str(chatId): link}
-                        collection.insert_one(document)
+                        document = {str(chatId): [link]}
+                        # usersAndLinkCollection.insert_one(document)
+                        usersAndLinkCollection.update_one(
+                            {"usersChatId": str(chatId)},  # Find the user by user_id
+                            {"$push": {"usersLink": link}},  # Push new URL to the "urls" array
+                            upsert=True  # If the user doesn't exist, create a new document
+                        )
 
                         chat_data[str(chatId)].append(link)
 
@@ -167,7 +172,7 @@ def add_users_links(message):
                     response = f"{link}, returned error code {ping.status_code}"
 
             except Exception as e:
-
+                print(str(e))
                 response = f"An error occured while addidng {link}, kindly contact support or raise an issue on github"
                 bot.reply_to(message, response)
 
