@@ -15,8 +15,6 @@ bot = telebot.TeleBot(apiToken)
 requestTimeout = 60
 
 usersAndLinkCollection = db.get_database().usersAndLink #Table holding both users id and their respective project links
-urlCollection = db.get_database().url #Table holding all links on the bot watchlist
-
 
 whitelistedUrl = [".onrender.com",".pyhtonanywhere.com", ".netlify.app", "vercel.app"]
 
