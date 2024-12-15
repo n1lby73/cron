@@ -203,14 +203,14 @@ def delete_users_links(message):
             
         )
 
-        if result.deleted_count > 0:
+        if result.modified_count > 0:
 
             response = f"Deleted {deleteChoice}"
             bot.reply_to(message, response)
 
         else:
 
-            response = f"Unable to delete {deleteChoice}"
+            response = f"{deleteChoice} is not in your list of links"
             bot.reply_to(message, response)
 
                     
