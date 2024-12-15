@@ -233,23 +233,16 @@ def handle_commands(message):
     # Force the command to be lowercase
     command = message.text.lower()
 
+    # Check if the link ends with "/" and remove it
+    if command.endswith("/"):
+
+        command = command[:-1]  
+
     #get function to be called
     handler = command_handlers.get(command.split()[0])
 
     if handler:
         handler(message)
-
-    elif handler == "/add" or handler == "/delete":
-        
-        linkToAddOrDelete = command.split(" ",1)
-
-        if handler == "/add":
-
-            add_users_links(linkToAddOrDelete)
-
-        if handler == "/delete":
-
-            delete_users_links(linkToAddOrDelete)
 
     else:
 
@@ -280,7 +273,7 @@ def linkOwnerbylink(link):
     
 def processLinks():
 
-    allLinks = [links for usersLinks in chat_data.values() for links in usersLinks]
+    allLinks = [extractedDbLinks for usersLinkDB in usersAndLinkCollection.find()for extractedDbLinks in usersLinkDB.get("usersLink")]
 
     try:
 
@@ -318,4 +311,4 @@ ping_thread.daemon = True  # Set as daemon thread to stop when main thread stops
 ping_thread.start()
 
 bot.infinity_polling()
-# pingLinks(1)
+pingLinks(1)
