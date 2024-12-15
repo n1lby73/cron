@@ -159,20 +159,27 @@ def list_users_links(message):
 
     try:
 
+        userAddedLinks = usersAndLinkCollection.find_one({"usersChatId":chat_id})
 
-        usersAndLinkLocal = chat_data[str(chat_id)]
+        # usersAndLinkLocal = chat_data[str(chat_id)]
 
-        if len(usersAndLinkLocal) == 0:
+        if len(userAddedLinks.get("usersLink", [])) == 0:
 
-            response = "You have no saved links"
+            response = "You have no saved links you goat"
 
             bot.reply_to(message, response)
+
+        # if len(usersAndLinkLocal) == 0:
+
+        #     response = "You have no saved links"
+
+        #     bot.reply_to(message, response)
 
         else:
 
             response = "Your saved links are:\n\n"
 
-            for user_Links in usersAndLinkLocal:
+            for user_Links in userAddedLinks.get("usersLink"):
 
                 response += f"- {user_Links}\n"
 
@@ -180,7 +187,7 @@ def list_users_links(message):
     
     except KeyError:
 
-        response = "You have no saved links"
+        response = "You have no savedmmmmmmmmmmm links"
 
         bot.reply_to(message, response)
     
