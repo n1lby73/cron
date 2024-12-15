@@ -187,25 +187,44 @@ def list_users_links(message):
 # Handle /delete
 def delete_users_links(message):
 
-    chat_id = message.chat.id
+    chat_id = str(message.chat.id)
 
     try:
 
         deleteChoice = message.text.split(maxsplit=1)[1]
 
-        usersAndLinkLocal = chat_data[str(chat_id)]
+        # usersAndLinkLocal = chat_data[str(chat_id)]
+  
+        # Use $pull to remove the specific link from the usersLink array
+        result = usersAndLinkCollection.update_one(
+
+            {"usersChatId": chat_id},  # Find the user with the specified usersChatId
+            {"$pull": {"usersLink": deleteChoice}}  # Remove target_link from the usersLink array
+            
+        )
+
+        if result.deleted_count > 0:
+
+            response = f"Deleted {deleteChoice}"
+            bot.reply_to(message, response)
+
+        else:
+
+            response = f"Unable to delete {deleteChoice}"
+            bot.reply_to(message, response)
+
                     
-        for users_link in usersAndLinkLocal:
+        # for users_link in usersAndLinkLocal:
 
-            if users_link == deleteChoice:
+        #     if users_link == deleteChoice:
 
-                chat_data[str(chat_id)].remove(users_link)
+        #         chat_data[str(chat_id)].remove(users_link)
                 
-                with open('usersAndLink.json', 'w') as file:
-                    json.dump(chat_data, file, indent=4)
+        #         with open('usersAndLink.json', 'w') as file:
+        #             json.dump(chat_data, file, indent=4)
 
-                response = f"Deleted {deleteChoice}"
-                bot.reply_to(message, response)
+        #         response = f"Deleted {deleteChoice}"
+        #         bot.reply_to(message, response)
                     
     except:
 
