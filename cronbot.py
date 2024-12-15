@@ -18,17 +18,6 @@ usersAndLinkCollection = db.get_database().usersAndLink #Table holding both user
 urlCollection = db.get_database().url #Table holding all links on the bot watchlist
 
 
-# Load existing JSON data (if any)
-try:
-
-    with open('usersAndLink.json', 'r') as file:
-
-        chat_data = json.load(file)
-
-except FileNotFoundError:
-
-    chat_data = {}
-
 whitelistedUrl = [".onrender.com",".pyhtonanywhere.com", ".netlify.app", "vercel.app"]
 
 def is_whitelisted(link):
@@ -192,8 +181,6 @@ def delete_users_links(message):
     try:
 
         deleteChoice = message.text.split(maxsplit=1)[1]
-
-        # usersAndLinkLocal = chat_data[str(chat_id)]
   
         # Use $pull to remove the specific link from the usersLink array
         result = usersAndLinkCollection.update_one(
@@ -203,7 +190,7 @@ def delete_users_links(message):
             
         )
 
-        if result.modified_count > 0:
+        if result.modified_count > 0: #modified_count is inbuilt to pymongo to check number of iles deleted
 
             response = f"Deleted {deleteChoice}"
             bot.reply_to(message, response)
@@ -212,19 +199,6 @@ def delete_users_links(message):
 
             response = f"{deleteChoice} is not in your list of links"
             bot.reply_to(message, response)
-
-                    
-        # for users_link in usersAndLinkLocal:
-
-        #     if users_link == deleteChoice:
-
-        #         chat_data[str(chat_id)].remove(users_link)
-                
-        #         with open('usersAndLink.json', 'w') as file:
-        #             json.dump(chat_data, file, indent=4)
-
-        #         response = f"Deleted {deleteChoice}"
-        #         bot.reply_to(message, response)
                     
     except:
 
