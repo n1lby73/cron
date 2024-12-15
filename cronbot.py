@@ -15,6 +15,7 @@ bot = telebot.TeleBot(apiToken)
 requestTimeout = 60
 
 usersAndLinkCollection = db.get_database().usersAndLink
+urlCollection = db.get_database().url
 
 
 # Load existing JSON data (if any)
@@ -69,7 +70,15 @@ def add_users_links(message):
     try:
 
         link = message.text.split(maxsplit=1)[1]
-        allLinks = [links for usersLinks in chat_data.values() for links in usersLinks]
+        allLinks = [usersLinks.get("allUsersLink") for usersLinks in urlCollection.find() if "allUsersLink" in usersLinks]
+        # allLink = []
+        # for usersLinks in urlCollection.find():
+        #     dblink = usersLinks.get("allUsersLink")
+        #     allLink.append(dblink)
+        print (allLinks)
+        # for i in urlCollection.find():
+        #     print(i)
+        # allLinks = [links for usersLinks in chat_data.values() for links in usersLinks]
 
         if not link.startswith(("http","https")):
 
@@ -129,15 +138,24 @@ def add_users_links(message):
 
                     chatId = message.chat.id
 
+                    document = {"allUsersLink": link}
+                    urlCollection.insert_one(document)
+
+                    usersAndLinkCollection.update_one(
+                        {"usersChatId": str(chatId)},  # Find the user by user_id
+                        {"$push": {"usersLink": link}},  # Push new URL to the "urls" array
+                        upsert=True  # If the user doesn't exist, create a new document
+                    )
+                    
                     if str(chatId) in chat_data:
                         
-                        document = {str(chatId): [link]}
-                        # usersAndLinkCollection.insert_one(document)
-                        usersAndLinkCollection.update_one(
-                            {"usersChatId": str(chatId)},  # Find the user by user_id
-                            {"$push": {"usersLink": link}},  # Push new URL to the "urls" array
-                            upsert=True  # If the user doesn't exist, create a new document
-                        )
+                        # document = {str(chatId): link}
+                        # urlCollection.insert_one(document)
+                        # usersAndLinkCollection.update_one(
+                        #     {"usersChatId": str(chatId)},  # Find the user by user_id
+                        #     {"$push": {"usersLink": link}},  # Push new URL to the "urls" array
+                        #     upsert=True  # If the user doesn't exist, create a new document
+                        # )
 
                         chat_data[str(chatId)].append(link)
 
