@@ -65,8 +65,6 @@ def add_users_links(message):
         link = message.text.split(maxsplit=1)[1]
         allLinks = [extractedDbLinks for usersLinkDB in usersAndLinkCollection.find()for extractedDbLinks in usersLinkDB.get("usersLink")]
 
-        # allLinks = [usersLinks.get("allUsersLink") for usersLinks in urlCollection.find() if "allUsersLink" in usersLinks]
-
         if not link.startswith(("http","https")):
 
             response = "Please use either https or http format"
@@ -87,7 +85,6 @@ def add_users_links(message):
 
         elif link in allLinks:
 
-            # usersAndLinkLocal = chat_data[str(chat_id)]
             whichUsersLink = usersAndLinkCollection.find_one({"usersLink":link})
 
             if whichUsersLink.get("usersChatId") == chat_id:
@@ -101,18 +98,6 @@ def add_users_links(message):
 
             bot.reply_to(message, response)
                     
-            # for users_link in usersAndLinkLocal:
-
-            #     if users_link == link:
-
-            #         response = f"Dear @{username}, you've already added {link} to your collection\n\nKindly use '/list' command to see the list of all links you've added"
-            #         bot.reply_to(message, response)
-
-            #         return #To stop the program execution
-
-            # response = f"{link} has already been added to our watchlist by another user"
-
-            # bot.reply_to(message, response)
 
         elif is_whitelisted(link):
 
@@ -137,9 +122,6 @@ def add_users_links(message):
 
                     chatId = message.chat.id
 
-                    # document = {"allUsersLink": link}
-                    # urlCollection.insert_one(document)
-
                     usersAndLinkCollection.update_one(
 
                         {"usersChatId": str(chatId)},  # Find the user by user_id
@@ -147,39 +129,9 @@ def add_users_links(message):
                         upsert=True  # If the user doesn't exist, create a new document
 
                     )
-                    
-                    # if str(chatId) in chat_data:
-                        
-                    #     # document = {str(chatId): link}
-                    #     # urlCollection.insert_one(document)
-                    #     # usersAndLinkCollection.update_one(
-                    #     #     {"usersChatId": str(chatId)},  # Find the user by user_id
-                    #     #     {"$push": {"usersLink": link}},  # Push new URL to the "urls" array
-                    #     #     upsert=True  # If the user doesn't exist, create a new document
-                    #     # )
 
-                    #     chat_data[str(chatId)].append(link)
-
-                    #     # Update the JSON file with the new data
-                    #     with open('usersAndLink.json', 'w') as file:
-
-                    #         json.dump(chat_data, file, indent=4)
-
-                    #     response = f"successfully added {link}"
-                    #     bot.reply_to(message, response)
-
-                    # else:
-
-                    #     chat_data[str(chatId)] = []
-                    #     chat_data[str(chatId)].append(link)
-
-                    #     # Update the JSON file with the new data
-                    #     with open('usersAndLink.json', 'w') as file:
-
-                    #         json.dump(chat_data, file, indent=4)
-
-                    #     response = f"successfully added {link}"
-                    #     bot.reply_to(message, response)
+                    response = f"successfully added {link}"
+                    bot.reply_to(message, response)
 
                 elif ping.status_code == 404:
 
@@ -207,7 +159,7 @@ def list_users_links(message):
 
     try:
 
-        
+
         usersAndLinkLocal = chat_data[str(chat_id)]
 
         if len(usersAndLinkLocal) == 0:
