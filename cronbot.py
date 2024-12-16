@@ -45,6 +45,17 @@ async def linkStatus(link):
 
         return None
     
+# Function to identify link owner
+def whichUser(link):
+
+    whichUsersLink = usersAndLinkCollection.find_one({"usersLink":link})
+
+    if whichUsersLink is None:
+
+        return None
+    
+    return whichUsersLink.get("usersChatId")
+ 
 # Handle '/start'
 def send_welcome(message):
 
@@ -87,9 +98,9 @@ async def add_users_links(message):
 
         elif link in allLinks:
 
-            whichUsersLink = usersAndLinkCollection.find_one({"usersLink":link})
+            checkWhichUserAddedLink = whichUser(link)
 
-            if whichUsersLink.get("usersChatId") == chat_id:
+            if checkWhichUserAddedLink == chat_id:
 
                 response = f"Dear @{username}, you've already added {link} to your collection\n\nKindly use '/list' command to see the list of all links you've added"
                 bot.reply_to(message, response)
@@ -278,11 +289,11 @@ def handle_wrong_msgFormat(message):
 
 # Function to identify link owner
 
-def linkOwnerbylink(link):
+# def linkOwnerbylink(link):
 
-    for linkOwner, linkOwned in chat_data.items():
+#     for linkOwner, linkOwned in chat_data.items():
 
-        return next((linkOwner for confirmLinkedOwned in linkOwned if confirmLinkedOwned == link), None)
+#         return next((linkOwner for confirmLinkedOwned in linkOwned if confirmLinkedOwned == link), None)
 
         # for confirmLinkedOwned in linkOwned:
 
@@ -290,7 +301,7 @@ def linkOwnerbylink(link):
 
         #         return linkOwner
     
-def processLinks():
+async def processLinks():
 
     allLinks = [extractedDbLinks for usersLinkDB in usersAndLinkCollection.find()for extractedDbLinks in usersLinkDB.get("usersLink")]
 
@@ -298,11 +309,11 @@ def processLinks():
 
         for links in allLinks:
 
-            response = requests.get(links, timeout=requestTimeout)
+            response = await linkStatus(links)
 
-            if response.status_code != 200:
+            if response != 200:
 
-                linkOwner = linkOwnerbylink(links)
+                linkOwner = whichUser(links)
 
                 botResponse = f"Hello, your link:\n\n{links}\n\ndid not return a 200 response code after pinging"
                 bot.send_message(linkOwner, botResponse)
@@ -310,7 +321,7 @@ def processLinks():
 # Handle request exception (e.g., timeout, connection error)
     except requests.RequestException:
             
-            linkOwner = linkOwnerbylink(links)
+            linkOwner = whichUser(links)
 
             botResponse = f"Hello, your link:\n\n{links}\n\ncould not be reached due to a service timeout or connection error.\n\nKindly reach out for support https://github.com/n1lby73/cron/issues if the error persists."
             bot.send_message(linkOwner, botResponse)
