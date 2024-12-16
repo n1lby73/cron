@@ -1,10 +1,7 @@
+import requests, asyncio, aiohttp, telebot, json, os
 from pymongo import MongoClient
 from dotenv import load_dotenv
 import threading
-import requests
-import telebot
-import json
-import os
 
 load_dotenv()
 
@@ -20,16 +17,34 @@ whitelistedUrl = [".onrender.com",".pyhtonanywhere.com", ".netlify.app", "vercel
 
 def is_whitelisted(link):
 
-    blackListed = next((url for url in whitelistedUrl if url in link), None)
+    return not any(url in link for url in whitelistedUrl)
 
-    if blackListed:
+    # blackListed = next((url for url in whitelistedUrl if url in link), None)
 
-        return False
+    # if blackListed:
+
+    #     return False
     
-    else:
+    # else:
 
-        return True
+    #     return True
 
+#Async function to check link status
+
+async def linkStatus(link):
+
+    try:
+
+        async with aiohttp.ClientSession() as session:
+
+            async with session.get(link, time=requestTimeout) as response:
+
+                return response.status
+            
+    except:
+
+        return None
+    
 # Handle '/start'
 def send_welcome(message):
 
@@ -42,7 +57,7 @@ def send_welcome(message):
     bot.reply_to(message, response)
     
 # Handle /add
-def add_users_links(message):
+async def add_users_links(message):
 
     chat_id = str(message.chat.id)
     username = message.chat.username
@@ -100,9 +115,9 @@ def add_users_links(message):
 
                 bot.reply_to(message, response)
 
-                ping = requests.get(link, timeout=requestTimeout)
+                ping = await linkStatus(link)
 
-                if ping.status_code == 200:
+                if ping == 200:
 
                     response = f"Adding {link} to our watchlist"
                     bot.reply_to(message, response)
@@ -118,19 +133,21 @@ def add_users_links(message):
                     )
 
                     response = f"successfully added {link}"
-                    bot.reply_to(message, response)
+                    # bot.reply_to(message, response)
 
-                elif ping.status_code == 404:
+                elif ping == 404:
 
                     response = f"{link}, returned a 404 error code, kindly look it up"
-                    bot.reply_to(message, response)
+                    # bot.reply_to(message, response)
 
                 else:
 
-                    response = f"{link}, returned error code {ping.status_code}"
+                    response = f"{link}, returned error code {ping}"
+
+                bot.reply_to(message, response)
 
             except Exception as e:
-                print(str(e))
+
                 response = f"An error occured while addidng {link}, kindly contact support or raise an issue on github"
                 bot.reply_to(message, response)
 
@@ -152,8 +169,6 @@ def list_users_links(message):
 
             response = "You have no saved links"
 
-            bot.reply_to(message, response)
-
         else:
 
             response = "Your saved links are:\n\n"
@@ -162,7 +177,7 @@ def list_users_links(message):
 
                 response += f"- {user_Links}\n"
 
-            bot.reply_to(message, response)
+        bot.reply_to(message, response)
     
     except KeyError:
 
@@ -191,12 +206,12 @@ def delete_users_links(message):
         if result.modified_count > 0: #modified_count is inbuilt to pymongo to check number of iles deleted
 
             response = f"Deleted {deleteChoice}"
-            bot.reply_to(message, response)
 
         else:
 
             response = f"{deleteChoice} is not in your list of links"
-            bot.reply_to(message, response)
+
+        bot.reply_to(message, response)
                     
     except:
 
@@ -253,6 +268,10 @@ def handle_commands(message):
 @bot.message_handler(func=lambda userMessage: not userMessage.text.startswith('/'))
 def handle_wrong_msgFormat(message):
 
+    if ((message.text.lower() == os.getenv('adminPrompt')) and (str(message.chat.id) == os.getenv('adminId'))):
+
+        response = "what would you like to broadcast"
+        
     response = "Seems you're trying to send a command kindly use the right format or use '/help' to see list of available commands"
 
     bot.reply_to(message, response)
