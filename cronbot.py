@@ -287,20 +287,6 @@ def handle_wrong_msgFormat(message):
 
     bot.reply_to(message, response)
 
-# Function to identify link owner
-
-# def linkOwnerbylink(link):
-
-#     for linkOwner, linkOwned in chat_data.items():
-
-#         return next((linkOwner for confirmLinkedOwned in linkOwned if confirmLinkedOwned == link), None)
-
-        # for confirmLinkedOwned in linkOwned:
-
-        #     if confirmLinkedOwned == link:
-
-        #         return linkOwner
-    
 async def processLinks():
 
     allLinks = [extractedDbLinks for usersLinkDB in usersAndLinkCollection.find()for extractedDbLinks in usersLinkDB.get("usersLink")]
@@ -326,19 +312,35 @@ async def processLinks():
             botResponse = f"Hello, your link:\n\n{links}\n\ncould not be reached due to a service timeout or connection error.\n\nKindly reach out for support https://github.com/n1lby73/cron/issues if the error persists."
             bot.send_message(linkOwner, botResponse)
 
-# Function to start ping as a thread
+# Async function to start pinging the links
     
-def pingLinks(interval):
-    import time
+async def pingLinks(interval):
     while True:
-        processLinks()
-        time.sleep(interval)
+        await processLinks()
+        print ("here")
+        await asyncio.sleep(interval)
 
+def run_ping_task():
+    # This function runs the asyncio event loop for pinging
+    asyncio.run(pingLinks(300)) 
+
+# # Async funtion to start bot
+# async def startBot():
+
+#     bot.infinity_polling()
+
+# async def main():
+
+#     botTask = asyncio.create_task(startBot())
+#     pingTask = asyncio.create_task(pingLinks(300))
+
+#     await asyncio.gather(botTask, pingTask)
+
+# asyncio.run(main())
 # Start pingLinks in a separate thread
         
-ping_thread = threading.Thread(target=pingLinks, args=(300,))
+ping_thread = threading.Thread(target=run_ping_task)
 ping_thread.daemon = True  # Set as daemon thread to stop when main thread stops
 ping_thread.start()
 
 bot.infinity_polling()
-pingLinks(1)
