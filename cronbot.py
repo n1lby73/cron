@@ -14,6 +14,7 @@ requestTimeout = 60
 usersAndLinkCollection = db.get_database().usersAndLink #Table holding both users id and their respective project links
 
 whitelistedUrl = [".onrender.com",".pyhtonanywhere.com", ".netlify.app", "vercel.app"]
+broadcastFlag = False
 
 def is_whitelisted(link):
 
@@ -303,14 +304,40 @@ def handle_commands(message):
 # Track all messages that does not have the correct message syntax which is /
 @bot.message_handler(func=lambda userMessage: not userMessage.text.startswith('/'))
 def handle_wrong_msgFormat(message):
-
+    global broadcastFlag
     if ((message.text.lower() == os.getenv('adminPrompt')) and (str(message.chat.id) == os.getenv('adminId'))):
 
         response = "what would you like to broadcast"
-        
-    response = "Seems you're trying to send a command kindly use the right format or use '/help' to see list of available commands"
+        broadcastFlag = True
+        bot.reply_to(message, response)
+        return
 
-    bot.reply_to(message, response)
+    if broadcastFlag and (str(message.chat.id) == os.getenv('adminId')):
+
+        broadcast_message = message.text
+        allUsers = [extractedUsers["usersChatId"] for extractedUsers in usersAndLinkCollection.find()]
+
+        # Send the broadcast message to all users
+        for user_id in allUsers:
+            try:
+                print (broadcast_message)
+                print(user_id)
+                bot.send_message(user_id, broadcast_message)
+                print("work")
+                
+
+            except Exception as e:
+
+                print(f"Error sending message to {user_id}: {e}")
+
+        broadcastFlag = False
+            
+    else:
+
+        response = "Seems you're trying to send a command kindly use the right format or use '/help' to see list of available commands"
+
+        bot.reply_to(message, response)
+
 
 async def processLinks():
 
@@ -342,27 +369,11 @@ async def processLinks():
 async def pingLinks(interval):
     while True:
         await processLinks()
-        print ("here")
         await asyncio.sleep(interval)
 
 def run_ping_task():
     # This function runs the asyncio event loop for pinging
     asyncio.run(pingLinks(10)) 
-
-# # Async funtion to start bot
-# async def startBot():
-
-#     bot.infinity_polling()
-
-# async def main():
-
-#     botTask = asyncio.create_task(startBot())
-#     pingTask = asyncio.create_task(pingLinks(300))
-
-#     await asyncio.gather(botTask, pingTask)
-
-# asyncio.run(main())
-# Start pingLinks in a separate thread
         
 ping_thread = threading.Thread(target=run_ping_task)
 ping_thread.daemon = True  # Set as daemon thread to stop when main thread stops
