@@ -37,14 +37,39 @@ async def linkStatus(link):
 
         async with aiohttp.ClientSession() as session:
 
-            async with session.get(link, time=requestTimeout) as response:
+            async with session.get(link, timeout=requestTimeout) as response:
 
                 return response.status
             
     except:
 
         return None
-    
+
+def handle_ping_response(task, message, link, chat_id, username):
+    ping = task.result()  # Get the result of the asynchronous ping
+
+    if ping == 200:
+        response = f"Adding {link} to our watchlist"
+        bot.reply_to(message, response)
+
+        # Add link to user's collection in MongoDB
+        usersAndLinkCollection.update_one(
+            {"usersChatId": str(chat_id)},  # Find the user by user_id
+            {"$push": {"usersLink": link}},  # Push new URL to the "urls" array
+            upsert=True  # If the user doesn't exist, create a new document
+        )
+
+        response = f"Successfully added {link}"
+        bot.reply_to(message, response)
+
+    elif ping == 404:
+        response = f"{link}, returned a 404 error code. Kindly look it up."
+        bot.reply_to(message, response)
+
+    else:
+        response = f"{link}, returned error code {ping}"
+        bot.reply_to(message, response)
+
 # Function to identify link owner
 def whichUser(link):
 
@@ -68,7 +93,7 @@ def send_welcome(message):
     bot.reply_to(message, response)
     
 # Handle /add
-async def add_users_links(message):
+def add_users_links(message):
 
     chat_id = str(message.chat.id)
     username = message.chat.username
@@ -126,9 +151,9 @@ async def add_users_links(message):
 
                 bot.reply_to(message, response)
 
-                ping = await linkStatus(link)
+                ping = requests.get(link, timeout=requestTimeout)
 
-                if ping == 200:
+                if ping.status_code == 200:
 
                     response = f"Adding {link} to our watchlist"
                     bot.reply_to(message, response)
@@ -146,7 +171,7 @@ async def add_users_links(message):
                     response = f"successfully added {link}"
                     # bot.reply_to(message, response)
 
-                elif ping == 404:
+                elif ping.status_code == 404:
 
                     response = f"{link}, returned a 404 error code, kindly look it up"
                     # bot.reply_to(message, response)
@@ -301,7 +326,7 @@ async def processLinks():
 
                 linkOwner = whichUser(links)
 
-                botResponse = f"Hello, your link:\n\n{links}\n\ndid not return a 200 response code after pinging"
+                botResponse = f"Hello, your link:\n\n{links}\n\ndid not return a 200 response code after pinging {response}"
                 bot.send_message(linkOwner, botResponse)
 
 # Handle request exception (e.g., timeout, connection error)
@@ -322,7 +347,7 @@ async def pingLinks(interval):
 
 def run_ping_task():
     # This function runs the asyncio event loop for pinging
-    asyncio.run(pingLinks(300)) 
+    asyncio.run(pingLinks(10)) 
 
 # # Async funtion to start bot
 # async def startBot():
