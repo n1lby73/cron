@@ -320,15 +320,13 @@ def handle_wrong_msgFormat(message):
         # Send the broadcast message to all users
         for user_id in allUsers:
             try:
-                print (broadcast_message)
-                print(user_id)
-                bot.send_message(user_id, broadcast_message)
-                print("work")
-                
+
+                bot.send_message(user_id, broadcast_message)                
 
             except Exception as e:
-
-                print(f"Error sending message to {user_id}: {e}")
+                
+                response = f"Error sending message to {user_id}: {e}"
+                bot.reply_to(message, response)
 
         broadcastFlag = False
             
